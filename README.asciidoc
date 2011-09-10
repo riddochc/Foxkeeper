@@ -20,10 +20,10 @@ and install updates.  It's hard to know that it has even happened, with a few
 exceptions.  Even less common is any obvious indication of what actually changed.
 
 Not only can Foxkeeper let you know that something has changed, if you feel
-*especially* motivated, you can review those changes yourself.  Git's standard
+'especially' motivated, you can review those changes yourself.  Git's standard
 GUI is used, allowing you to pick and choose which changes you'd like to keep,
 and which to omit.  (By default, all the changes that firefox has made are
-staged, so you can just hit 'commit' and be okay).
+staged, so you can just hit +commit+ and be okay).
 
 If you have the Copious Free Time and know what to look for, Foxkeeper could
 even help prevent you from being the victim of a nefarious plugin!
@@ -35,39 +35,43 @@ installed.
 
 Rubygems: 
 
-* parseconfig, to read firefox's profiles.ini file.
+* +parseconfig+, to read firefox's profiles.ini file.
 
 Other programs:
 
-* The sqlite3 program (not just libraries) installed.
+* The +sqlite3+ program (not just its libraries)
 
 == Installation/Setup ==
 
 Note: Presently, Foxkeeper is only tested under Linux.  These instructions
 should get easier over time as the project develops.
 
-First, add the foxkeeper directory to your $PATH, so it can find its auxiliary
+First, add the foxkeeper directory to your +$PATH+, so it can find its auxiliary
 ruby scripts.  You may also need to change the paths at the top of the ruby
 scripts if necessary, to properly execute them with Ruby 1.9.
 
+Then, install the necessary rubygems:
+
+  $ gem install parseconfig
+
 In your ~/.mozilla/firefox directory, you will have directories for each
-profile, and a 'Crash Reports' directory.  In the profile directories you
+profile, and a +Crash Reports+ directory.  In the profile directories you
 want to use foxkeeper on, run the following commands:
 
-$ git init
-$ echo "Cache/*" > .gitignore
-$ sqlite-filter-install.rb
-$ git add .
-$ git commit -m "Initial firefox settings"
+  $ git init
+  $ echo "Cache/*" > .gitignore
+  $ sqlite-filter-install.rb
+  $ git add .
+  $ git commit -m "Initial firefox settings"
 
 Now that the setup is done, you should be able to run foxkeeper, like so:
 
-$ foxkeeper
+  $ foxkeeper
 
-This will first run gitk to show you what has changed, then run firefox for
-you, then after firefox exits run 'git gui' for you.
+This will first run +gitk+ to show you what has changed, then run firefox for
+you, then after firefox exits run +git gui+ for you.
 
-If you don't usually use the terminal, you may want to edit firefox's ".desktop"
+If you don't usually use the terminal, you may want to edit firefox's +.desktop+
 file in your distribution to run foxkeeper instead of firefox.
 
 == Implementation notes ==
