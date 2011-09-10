@@ -1,0 +1,106 @@
+Foxkeeper
+=========
+Chris Riddoch <riddochc@gmail.com>
+0.1, 2011-09-09
+
+== Description ==
+
+What did firefox do to your settings/extensions/bookmarks/etc. *this* time?
+If only you had your firefox profile in revision control, you would know
+exactly what changed... and be able to change it back!
+
+== Features ==
+
+Foxkeeper preserves your settings, bookmarks, etc. in case firefox eats them!
+You can go back to the way firefox was when you last exited it, or the time
+before, back to when you first started using Foxkeeper.
+
+Additionally, many firefox extensions don't make much noise when they download
+and install updates.  It's hard to know that it has even happened, with a few
+exceptions.  Even less common is any obvious indication of what actually changed.
+
+Not only can Foxkeeper let you know that something has changed, if you feel
+*especially* motivated, you can review those changes yourself.  Git's standard
+GUI is used, allowing you to pick and choose which changes you'd like to keep,
+and which to omit.  (By default, all the changes that firefox has made are
+staged, so you can just hit 'commit' and be okay).
+
+If you have the Copious Free Time and know what to look for, Foxkeeper could
+even help prevent you from being the victim of a nefarious plugin!
+
+== Requirements ==
+
+You need Firefox (any relatively recent version should do) and Ruby 1.9
+installed.
+
+Rubygems: 
+
+* parseconfig, to read firefox's profiles.ini file.
+
+Other programs:
+
+* The sqlite3 program (not just libraries) installed.
+
+== Installation/Setup ==
+
+Note: Presently, Foxkeeper is only tested under Linux.  These instructions
+should get easier over time as the project develops.
+
+First, add the foxkeeper directory to your $PATH, so it can find its auxiliary
+ruby scripts.  You may also need to change the paths at the top of the ruby
+scripts if necessary, to properly execute them with Ruby 1.9.
+
+In your ~/.mozilla/firefox directory, you will have directories for each
+profile, and a 'Crash Reports' directory.  In the profile directories you
+want to use foxkeeper on, run the following commands:
+
+$ git init
+$ echo "Cache/*" > .gitignore
+$ sqlite-filter-install.rb
+$ git add .
+$ git commit -m "Initial firefox settings"
+
+Now that the setup is done, you should be able to run foxkeeper, like so:
+
+$ foxkeeper
+
+This will first run gitk to show you what has changed, then run firefox for
+you, then after firefox exits run 'git gui' for you.
+
+If you don't usually use the terminal, you may want to edit firefox's ".desktop"
+file in your distribution to run foxkeeper instead of firefox.
+
+== Implementation notes ==
+
+In order to make the best use of space, and to better show you what has
+actually changed, a major goal of this project is to avoid committing binary
+blobs to the git repository.  To that end, each binary file will be serialized
+to an appropriate text format representing the data in that file.  For example,
+a large number of files used by firefox are SQLite databases, which can be
+dumped by SQLite itself to the SQL necessary to recreate it.
+
+Unfortunately, some security-related files are in an ancient Berkeley DB
+format.  An ffi binding to the relevant code from the NSS module is forthcoming,
+to serialize these files to an appropriate text format.
+
+Suggestions and patches are welcome!
+
+== License ==
+
+Copyright © 2011 Chris Riddoch
+
+This program is free software; you can redistribute it and/or modify
+it under the terms of the GNU General Public License as published by
+the Free Software Foundation; either version 2 of the License, or
+(at your option) any later version.
+
+This program is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+GNU General Public License for more details.
+
+You should have received a copy of the GNU General Public License
+along with this program; if not, write to the Free Software
+Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+
+
