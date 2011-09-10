@@ -1,56 +1,28 @@
 #!/usr/bin/env ruby
 
 require 'rubygems'
-require 'dialog-fu'
-require 'facets'
+require 'parseconfig'
 require 'yaml'
 require 'fileutils'
 include FileUtils::Verbose
 
 profiledir = ENV['HOME'] + "/.mozilla/firefox/"
+profile = ParseConfig.new(profiledir + "profiles.ini")
 
-class Array
-  def rest
-    self[1,self.length-1]
-  end
+profile_name = ARGV[0] || "default"
+relative_dir = (profile.params.find {|k, v| v["Name"] == profile_name }[1]["IsRelative"] == "1")
+profile_path = profile.params.find {|k, v| v["Name"] == profile_name }[1]["Path"]
+
+if relative_dir == true
+  fullprofiledir = File.expand_path(profile_path, profiledir)
+else
+  fullprofiledir = profile_path
 end
 
-def readini(f)
-  ini = {}
-  f.readlines.divide(/^\[.*\]\s*$/).each { |section|
-    if section[0] =~ /^\[(.*)\]\s*$/
-      title = $1
-    else
-      title = "Untitled"
-    end
-    pairs = section.rest.collect { |keyval|
-      keyval.chomp.split(/=/)
-    }.to_h
-    ini[title] = pairs
-  }
-  ini
-end
-
-File.open(profiledir + "profiles.ini", 'r') do |f|
-  ini = readini(f)
-  profile_to_dir = {}
-  ini.each_value {|h|
-    unless h['Name'].nil?
-      profile_to_dir[h['Name']] = h['Path']
-    end
-  }
-  profile_to_dir.to_yaml
-  profile = selection_list(profile_to_dir.keys, :text => "Profile")
-  
-  fullprofiledir = profiledir + profile_to_dir[profile]
-  puts fullprofiledir
-
-  cd fullprofiledir do
-    `/home/riddochc/ff-git/reload-sqlite.rb`
-    `firefox -P "#{profile}"`
-    `/home/riddochc/ff-git/dump-sqlite.rb`
-    `git add .`
-    `git gui`
-  end
+cd fullprofiledir do
+  system('gitk')
+  system('firefox', '-P', 'profile')
+  system('git', 'add', '.')
+  system('git', 'gui')
 end
 
