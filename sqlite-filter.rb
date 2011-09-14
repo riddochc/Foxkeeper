@@ -51,7 +51,6 @@ when /sqlite-clean/  # stdin = db, stdout = sql
 when /sqlite-smudge/ # stdin = sql, stdout = db
   if ARGV[1].nil?
     input_stream = STDIN
-  end
   else
     input_stream = ARGV[1]
   end
